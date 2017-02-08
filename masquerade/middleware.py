@@ -1,7 +1,12 @@
 from django.contrib.auth.models import User
 
+
 class MasqueradeMiddleware(object):
-    def process_request(self, request):
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         """Checks for the presence of "mask_user" in the session. The value
         should be the username of the user to be masqueraded as. Note we
         also set the "is_masked" attribute to true in that case so that when we
@@ -17,3 +22,5 @@ class MasqueradeMiddleware(object):
                 request.user.is_masked = True
             except User.DoesNotExist:
                 pass
+
+        return self.get_response(request)
