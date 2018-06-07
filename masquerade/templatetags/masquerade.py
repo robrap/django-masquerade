@@ -1,6 +1,8 @@
 from django import template
 from django.core.urlresolvers import reverse
 
+from ..views import mask, unmask
+
 register = template.Library()
 
 @register.tag
@@ -18,11 +20,11 @@ class MasqueradeLinkNode(template.Node):
 
         try:
             if request.user.is_masked:
-                link = link % (reverse('masquerade.views.unmask'),
-                  'Unmask!')
+                link = link % (reverse(unmask),
+                  'Be yourself!')
             else:
-                link = link % (reverse('masquerade.views.mask'),
-                  'Masquerade as user')
+                link = link % (reverse(mask),
+                  'Impersonate a user.')
 
         except AttributeError:
             return ''
@@ -40,14 +42,14 @@ class MasqueradeStatusNode(template.Node):
     def render(self, context):
         request = self.request.resolve(context)
 
-        status = "You are not currently masquerading as any other user."
+        status = "You are not currently impersonating anyone."
 
         try:
             if request.user.is_masked:
-                status = "You are masquerading as %s (%s %s)" % (
+                status = "You are impersonating the user <b>%s</b>." % (
                   request.user.username,
-                  request.user.first_name,
-                  request.user.last_name,
+#                  request.user.first_name,
+#                  request.user.last_name,
                 )
 
         except AttributeError:

@@ -3,6 +3,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.template.context_processors import csrf
+
 from masquerade.forms import MaskForm
 from django.contrib.auth.models import User
 from masquerade.signals import start_masquerading, stop_masquerading
@@ -39,8 +41,9 @@ def mask(request, template_name='masquerade/mask_form.html'):
     else:
         form = MaskForm()
 
-    return render_to_response(template_name, {'form': form},
-      context_instance=RequestContext(request))
+    #return render_to_response(template_name, {'form': form},
+    #   context_instance=RequestContext(request))
+    return render_to_response(template_name, {'form': form, 'csrf_token': csrf(request)["csrf_token"]})
 
 def unmask(request):
     # Turn off masquerading. Don't bother checking permissions.
